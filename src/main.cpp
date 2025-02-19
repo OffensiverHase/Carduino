@@ -1,5 +1,6 @@
-#include "Arduino.h"
 #include <DynamixelShield.h>
+
+#include "Arduino.h"
 
 #if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_MEGA2560)
 #include <SoftwareSerial.h>
@@ -15,6 +16,7 @@ const uint8_t DXL_ID_L = 1;
 const uint8_t DXL_ID_R = 2;
 const float DXL_PROTOCOL_VERSION = 1.0;
 
+const int ledPin = 9;
 const int switchPin = 10;
 int switchState = 1;
 
@@ -49,25 +51,25 @@ void setup() {
   dxl.torqueOn(DXL_ID_L);
 
   pinMode(switchPin, INPUT_PULLUP);
-  pinMode(9, OUTPUT);
+  pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
   if (digitalRead(switchPin) == LOW) {
     while (digitalRead(switchPin) == LOW) {
+      digitalWrite(ledPin, HIGH);
+      delay(100);
+      digitalWrite(ledPin, LOW);
+      delay(100);
     }
     switchState = switchState == 1 ? 0 : 1;
-    digitalWrite(9, switchState);
-  }
+    digitalWrite(ledPin, !switchState);
 
-  // put your main code here, to run repeatedly:
-
-  // Please refer to e-Manual(http://emanual.robotis.com) for available range of
-  // value. Set Goal Velocity using RAW unit
-  if (switchState == 0) {
-    motor_forward(20);
-  } else {
-    motor_stop();
+    if (switchState == 0) {
+      motor_forward(20);
+    } else {
+      motor_stop();
+    }
   }
 }
 
