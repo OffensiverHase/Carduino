@@ -63,14 +63,24 @@ void loop() {
       delay(100);
     }
     switchState = switchState == 1 ? 0 : 1;
-    digitalWrite(ledPin, !switchState);
+    digitalWrite(ledPin, switchState);
 
     if (switchState == 0) {
-      motor_forward(20);
+      motor_left(20);
     } else {
-      motor_stop();
+      motor_right(20);
     }
   }
+}
+
+void motor_left(int percent) {
+  dxl.setGoalVelocity(DXL_ID_R, percent, UNIT_PERCENT);
+  dxl.setGoalVelocity(DXL_ID_L, percent, UNIT_PERCENT);
+}
+
+void motor_right(int percent) {
+  dxl.setGoalVelocity(DXL_ID_R, percent - 100, UNIT_PERCENT);
+  dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
 }
 
 void motor_forward(int percent) {
