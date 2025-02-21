@@ -20,7 +20,7 @@ const int switchPin = 10;
 const int pin5V = 12;
 int switchState = 1;
 
-Engine engine;
+Engine *engine = nullptr;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
@@ -38,6 +38,8 @@ void setup() {
 
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
+
+  engine = new Engine();
 }
 
 void loop() {
@@ -52,18 +54,18 @@ void loop() {
     digitalWrite(ledPin, switchState);
 
     if (switchState == 1) {
-      engine.forward(20);
+      engine->forward(20);
     } else {
-      engine.stop();
+      engine->stop();
     }
   }
 
-  if (getDistanceFront() < 15) {
-    engine.stop();
-    switchState = switchState == 1 ? 0 : 1;
+  // if (getDistanceFront() < 15) {
+  //   engine.stop();
+  //   switchState = switchState == 1 ? 0 : 1;
 
-    digitalWrite(ledPin, switchState);
-  }
+  //   digitalWrite(ledPin, switchState);
+  // }
 }
 
 int getDistanceFront() {
