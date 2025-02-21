@@ -16,8 +16,11 @@ const uint8_t DXL_ID_L = 1;
 const uint8_t DXL_ID_R = 2;
 const float DXL_PROTOCOL_VERSION = 1.0;
 
+const int echoPin = 3;
+const int trigPin = 4;
 const int ledPin = 9;
 const int switchPin = 10;
+const int pin5V = 12;
 int switchState = 1;
 
 DynamixelShield dxl;
@@ -27,6 +30,9 @@ using namespace ControlTableItem;
 
 void setup() {
   // put your setup code here, to run once:
+  // set pin 5V to HIGH
+  pinMode(pin5V, OUTPUT);
+  digitalWrite(pin5V, HIGH);
 
   // For Uno, Nano, Mini, and Mega, use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(9600);
@@ -52,6 +58,11 @@ void setup() {
 
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
+
+  pinMode(echoPin, INPUT);
+  pinMode(trigPin, OUTPUT);
+
+  motor_stop();
 }
 
 void loop() {
@@ -65,12 +76,28 @@ void loop() {
     switchState = switchState == 1 ? 0 : 1;
     digitalWrite(ledPin, switchState);
 
-    if (switchState == 0) {
-      motor_left(20);
+    if (switchState == 1) {
+      motor_forward(20);
     } else {
-      motor_right(20);
+      motor_stop();
     }
   }
+
+  if (getDistanceFront() < 15) {
+    motor_stop();
+    switchState = switchState == 1 ? 0 : 1;
+
+    digitalWrite(ledPin, switchState);
+  }
+}
+
+int getDistanceFront() {
+  digitalWrite(trigPin, LOW);
+  delay(2);
+  digitalWrite(trigPin, HIGH);
+  delay(10);
+  digitalWrite(trigPin, LOW);
+  return (pulseIn(echoPin, HIGH) * 0.034) / 2;
 }
 
 void motor_left(int percent) {
