@@ -1,4 +1,5 @@
 #include <DynamixelShield.h>
+#include <Engine.h>
 
 #include "Arduino.h"
 
@@ -12,10 +13,6 @@ SoftwareSerial soft_serial(7, 8);  // DYNAMIXELShield UART RX/TX
 #define DEBUG_SERIAL Serial
 #endif
 
-const uint8_t DXL_ID_L = 1;
-const uint8_t DXL_ID_R = 2;
-const float DXL_PROTOCOL_VERSION = 1.0;
-
 const int echoPin = 3;
 const int trigPin = 4;
 const int ledPin = 9;
@@ -23,7 +20,7 @@ const int switchPin = 10;
 const int pin5V = 12;
 int switchState = 1;
 
-DynamixelShield dxl;
+Engine engine;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
@@ -36,33 +33,11 @@ void setup() {
 
   // For Uno, Nano, Mini, and Mega, use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(9600);
-
-  // Set Port baudrate to 1000000 bps. This has to match with DYNAMIXEL
-  // baudrate.
-  dxl.begin(1000000);
-  // Set Port Protocol Version. This has to match with DYNAMIXEL protocol
-  // version.
-  dxl.setPortProtocolVersion(DXL_PROTOCOL_VERSION);
-  // Get DYNAMIXEL information
-  dxl.ping(DXL_ID_R);
-  dxl.ping(DXL_ID_L);
-
-  // Turn off torque when configuring items in EEPROM area
-  dxl.torqueOff(DXL_ID_R);
-  dxl.setOperatingMode(DXL_ID_R, OP_VELOCITY);
-  dxl.torqueOn(DXL_ID_R);
-
-  dxl.torqueOff(DXL_ID_L);
-  dxl.setOperatingMode(DXL_ID_L, OP_VELOCITY);
-  dxl.torqueOn(DXL_ID_L);
-
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
 
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
-
-  motor_stop();
 }
 
 void loop() {
@@ -77,14 +52,14 @@ void loop() {
     digitalWrite(ledPin, switchState);
 
     if (switchState == 1) {
-      motor_forward(20);
+      engine.forward(20);
     } else {
-      motor_stop();
+      engine.stop();
     }
   }
 
   if (getDistanceFront() < 15) {
-    motor_stop();
+    engine.stop();
     switchState = switchState == 1 ? 0 : 1;
 
     digitalWrite(ledPin, switchState);
@@ -98,28 +73,4 @@ int getDistanceFront() {
   delay(10);
   digitalWrite(trigPin, LOW);
   return (pulseIn(echoPin, HIGH) * 0.034) / 2;
-}
-
-void motor_left(int percent) {
-  dxl.setGoalVelocity(DXL_ID_R, percent, UNIT_PERCENT);
-  dxl.setGoalVelocity(DXL_ID_L, percent, UNIT_PERCENT);
-}
-
-void motor_right(int percent) {
-  dxl.setGoalVelocity(DXL_ID_R, percent - 100, UNIT_PERCENT);
-  dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
-}
-
-void motor_forward(int percent) {
-  dxl.setGoalVelocity(DXL_ID_R, percent, UNIT_PERCENT);
-  dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
-  DEBUG_SERIAL.print("Present Velocity(raw) : ");
-  DEBUG_SERIAL.println(dxl.getPresentVelocity(DXL_ID_L));
-}
-
-void motor_stop() {
-  dxl.setGoalVelocity(DXL_ID_R, 0);
-  dxl.setGoalVelocity(DXL_ID_L, 0);
-  DEBUG_SERIAL.print("Present Velocity(raw) : ");
-  DEBUG_SERIAL.println(dxl.getPresentVelocity(DXL_ID_L));
 }
