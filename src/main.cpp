@@ -1,3 +1,4 @@
+#include <DistanceSensor.h>
 #include <DynamixelShield.h>
 #include <Engine.h>
 
@@ -13,33 +14,37 @@ SoftwareSerial soft_serial(7, 8);  // DYNAMIXELShield UART RX/TX
 #define DEBUG_SERIAL Serial
 #endif
 
+
+// region Pins
 const int echoPin = 3;
 const int trigPin = 4;
 const int ledPin = 9;
 const int switchPin = 10;
 const int pin5V = 12;
+// endregion Pins
+
 int switchState = 1;
 
 Engine *engine = nullptr;
+DistanceSensor *frontSensor = nullptr;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
 
 void setup() {
-  // put your setup code here, to run once:
   // set pin 5V to HIGH
   pinMode(pin5V, OUTPUT);
   digitalWrite(pin5V, HIGH);
 
   // For Uno, Nano, Mini, and Mega, use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(9600);
+
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
 
-  pinMode(echoPin, INPUT);
-  pinMode(trigPin, OUTPUT);
-
   engine = new Engine();
+
+  frontSensor = new DistanceSensor(trigPin, echoPin);
 }
 
 void loop() {
@@ -60,19 +65,10 @@ void loop() {
     }
   }
 
-  // if (getDistanceFront() < 15) {
-  //   engine.stop();
-  //   switchState = switchState == 1 ? 0 : 1;
+  if (frontSensor->getDistance() < 15) {
+    engine->stop();
+    switchState = 0;
 
-  //   digitalWrite(ledPin, switchState);
-  // }
-}
-
-int getDistanceFront() {
-  digitalWrite(trigPin, LOW);
-  delay(2);
-  digitalWrite(trigPin, HIGH);
-  delay(10);
-  digitalWrite(trigPin, LOW);
-  return (pulseIn(echoPin, HIGH) * 0.034) / 2;
+    digitalWrite(ledPin, switchState);
+  }
 }
