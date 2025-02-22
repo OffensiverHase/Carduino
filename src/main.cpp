@@ -1,3 +1,4 @@
+// region Includes
 #include <DistanceSensor.h>
 #include <DynamixelShield.h>
 #include <Engine.h>
@@ -13,7 +14,7 @@ SoftwareSerial soft_serial(7, 8);  // DYNAMIXELShield UART RX/TX
 #else
 #define DEBUG_SERIAL Serial
 #endif
-
+// endregion Includes
 
 // region Pins
 const int echoPin = 3;

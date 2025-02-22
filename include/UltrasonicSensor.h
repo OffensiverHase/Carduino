@@ -1,9 +1,9 @@
 #ifndef DistanceSensor_h
 #define DistanceSensor_h
 
-class DistanceSensor {
+class UltrasonicSensor {
     public:
-        DistanceSensor(int trigPin, int echoPin);
+        UltrasonicSensor(int trigPin, int echoPin);
         int getDistance();
     private:
         int trigPin;

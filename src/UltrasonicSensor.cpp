@@ -1,15 +1,12 @@
 #include <Arduino.h>
-#include <DistanceSensor.h>
+#include <UltrasonicSensor.h>
 
-DistanceSensor::DistanceSensor(int trigPin, int echoPin) {
-  this->trigPin = trigPin;
-  this->echoPin = echoPin;
-
+UltrasonicSensor::UltrasonicSensor(int trigPin, int echoPin) : trigPin(trigPin), echoPin(echoPin) {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 }
 
-int DistanceSensor::getDistance() {
+int UltrasonicSensor::getDistance() {
   digitalWrite(trigPin, LOW);
   delay(2);
   digitalWrite(trigPin, HIGH);
