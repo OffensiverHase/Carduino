@@ -1,5 +1,5 @@
-#ifndef DistanceSensor_h
-#define DistanceSensor_h
+#ifndef UltrasonicSensor_h
+#define UltrasonicSensor_h
 
 class UltrasonicSensor {
     public:
