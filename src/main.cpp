@@ -1,5 +1,5 @@
 // region Includes
-#include <DistanceSensor.h>
+#include <UltrasonicSensor.h>
 #include <DynamixelShield.h>
 #include <Engine.h>
 
@@ -17,17 +17,22 @@ SoftwareSerial soft_serial(7, 8);  // DYNAMIXELShield UART RX/TX
 // endregion Includes
 
 // region Pins
-const int echoPin = 3;
-const int trigPin = 4;
+const int echoPinFront = 3;
+const int trigPinFront = 4;
+const int echoPinLeft = 5;
+const int trigPinLeft = 6;
 const int ledPin = 9;
 const int switchPin = 10;
 const int pin5V = 12;
 // endregion Pins
 
-int switchState = 1;
+volatile bool running = false;
+int distanceThreshold = 15;  // cm
+const int motorSpeed = 20;
 
 Engine *engine = nullptr;
-DistanceSensor *frontSensor = nullptr;
+UltrasonicSensor *frontSensor = nullptr;
+UltrasonicSensor *leftSensor = nullptr;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
@@ -45,7 +50,8 @@ void setup() {
 
   engine = new Engine();
 
-  frontSensor = new DistanceSensor(trigPin, echoPin);
+  frontSensor = new UltrasonicSensor(trigPinFront, echoPinFront);
+  leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
 }
 
 void loop() {
@@ -56,20 +62,21 @@ void loop() {
       digitalWrite(ledPin, LOW);
       delay(100);
     }
-    switchState = switchState == 1 ? 0 : 1;
-    digitalWrite(ledPin, switchState);
-
-    if (switchState == 1) {
-      engine->forward(20);
-    } else {
-      engine->stop();
-    }
+    running = !running;
+    digitalWrite(ledPin, !running);  // HIGH on standby
   }
+  if (running) {
+    int frontDistance = frontSensor->getDistance();
+    int leftDistance = leftSensor->getDistance();
 
-  if (frontSensor->getDistance() < 15) {
+    if (frontDistance < distanceThreshold && leftDistance < distanceThreshold) {
+      engine->right(motorSpeed);
+    } else if (leftDistance > distanceThreshold) {
+      engine->left(motorSpeed);
+    } else {
+      engine->forward(motorSpeed);
+    }
+  } else {
     engine->stop();
-    switchState = 0;
-
-    digitalWrite(ledPin, switchState);
   }
 }

@@ -24,14 +24,15 @@ void Engine::forward(int percent) {
     this->dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
 }
 
-void Engine::right(int percent) {
+void Engine::right(int percent) {  // nach rechts auf der stelle drehen
     this->dxl.setGoalVelocity(DXL_ID_R, percent - 100, UNIT_PERCENT);
-    this->dxl.setGoalVelocity(DXL_ID_L, percent, UNIT_PERCENT);
+    this->dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
 }
 
-void Engine::left(int percent) {
+void Engine::left(int percent) {  // nach links beim fahren drehen
     this->dxl.setGoalVelocity(DXL_ID_R, percent, UNIT_PERCENT);
-    this->dxl.setGoalVelocity(DXL_ID_L, percent - 100, UNIT_PERCENT);
+    // this->dxl.setGoalVelocity(DXL_ID_L, (percent / 2) - 100, UNIT_PERCENT);
+    this->dxl.setGoalVelocity(DXL_ID_L, 0 - 100, UNIT_PERCENT);  // -100 ^= 0
 }
 
 void Engine::stop() {
