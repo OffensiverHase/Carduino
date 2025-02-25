@@ -1,9 +1,10 @@
 // region Includes
-#include <UltrasonicSensor.h>
+#include <Arduino.h>
 #include <DynamixelShield.h>
 #include <Engine.h>
-
-#include "Arduino.h"
+#include <ToFSensor.h>
+#include <UltrasonicSensor.h>
+#include <Wire.h>
 
 #if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_MEGA2560)
 #include <SoftwareSerial.h>
@@ -30,23 +31,30 @@ int distanceThreshold = 15;  // cm
 const int motorSpeed = 20;
 
 Engine *engine = nullptr;
-UltrasonicSensor *frontSensor = nullptr;
-UltrasonicSensor *leftSensor = nullptr;
+// UltrasonicSensor *frontSensor = nullptr;
+// UltrasonicSensor *leftSensor = nullptr;
+ToFSensor *frontSensor = nullptr;
+ToFSensor *leftSensor = nullptr;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
   // For Uno, Nano, Mini, and Mega, use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(9600);
+
+  Wire.begin();
 
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
 
   engine = new Engine();
 
-  frontSensor = new UltrasonicSensor(trigPinFront, echoPinFront);
-  leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
+  // frontSensor = new UltrasonicSensor(trigPinFront, echoPinFront);
+  // leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
+  frontSensor = new ToFSensor(11, 0x28);
+  leftSensor = new ToFSensor(12, 0x29);
 }
 
 void loop() {
