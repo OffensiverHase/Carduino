@@ -21,9 +21,8 @@ const int echoPinFront = 3;
 const int trigPinFront = 4;
 const int echoPinLeft = 5;
 const int trigPinLeft = 6;
+const int switchPin = 7;
 const int ledPin = 9;
-const int switchPin = 10;
-const int pin5V = 12;
 // endregion Pins
 
 volatile bool running = false;
@@ -38,10 +37,6 @@ UltrasonicSensor *leftSensor = nullptr;
 using namespace ControlTableItem;
 
 void setup() {
-  // set pin 5V to HIGH
-  pinMode(pin5V, OUTPUT);
-  digitalWrite(pin5V, HIGH);
-
   // For Uno, Nano, Mini, and Mega, use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(9600);
 
