@@ -17,11 +17,14 @@ ToFSensor::ToFSensor(int xShutPin, int i2cAddress) : xShutPin(xShutPin), i2cAddr
             delay(100);
         }
     }
+    sensor.setMeasurementTimingBudget(200000);  // 200 ms -> high accuracy
     sensor.setAddress(i2cAddress);
     sensor.setTimeout(500);
+    
+    sensor.startContinuous();
 }
 
 // @returns distance in mm
 int ToFSensor::getDistance() {
-    return sensor.readRangeSingleMillimeters();
+    return sensor.readRangeContinuousMillimeters();
 }
