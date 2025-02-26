@@ -27,7 +27,7 @@ const int ledPin = 9;
 // endregion Pins
 
 volatile bool running = false;
-int distanceThreshold = 100;  // mm
+int distanceThreshold = 200;  // mm
 const int motorSpeed = 20;
 
 Engine *engine = nullptr;
