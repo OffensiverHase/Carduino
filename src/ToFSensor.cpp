@@ -21,6 +21,7 @@ ToFSensor::ToFSensor(int xShutPin, int i2cAddress) : xShutPin(xShutPin), i2cAddr
     sensor.setTimeout(500);
 }
 
+// @returns distance in mm
 int ToFSensor::getDistance() {
     return sensor.readRangeSingleMillimeters();
 }

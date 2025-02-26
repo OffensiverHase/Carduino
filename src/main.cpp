@@ -27,7 +27,7 @@ const int ledPin = 9;
 // endregion Pins
 
 volatile bool running = false;
-int distanceThreshold = 15;  // cm
+int distanceThreshold = 100;  // mm
 const int motorSpeed = 20;
 
 Engine *engine = nullptr;
@@ -55,6 +55,8 @@ void setup() {
   // leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
   frontSensor = new ToFSensor(11, 0x28);
   leftSensor = new ToFSensor(12, 0x29);
+
+  digitalWrite(ledPin, !running);
 }
 
 void loop() {
@@ -76,6 +78,8 @@ void loop() {
       engine->right(motorSpeed);
     } else if (leftDistance > distanceThreshold) {
       engine->left(motorSpeed);
+    } else if (frontDistance < distanceThreshold / 2) {
+      engine->right(motorSpeed);
     } else {
       engine->forward(motorSpeed);
     }
