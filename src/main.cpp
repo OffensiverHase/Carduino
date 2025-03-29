@@ -28,13 +28,13 @@ const int ledPin = 9;
 
 volatile bool running = false;
 int distanceThreshold = 200;  // mm
-const int motorSpeed = 20;
+const int motorSpeed = 100;
 
 Engine *engine = nullptr;
-// UltrasonicSensor *frontSensor = nullptr;
-// UltrasonicSensor *leftSensor = nullptr;
-ToFSensor *frontSensor = nullptr;
-ToFSensor *leftSensor = nullptr;
+// ToFSensor *frontSensor = nullptr;
+// ToFSensor *leftSensor = nullptr;
+UltrasonicSensor *frontSensor = nullptr;
+UltrasonicSensor *leftSensor = nullptr;
 
 // This namespace is required to use Control table item names
 using namespace ControlTableItem;
@@ -51,10 +51,10 @@ void setup() {
 
   engine = new Engine();
 
-  // frontSensor = new UltrasonicSensor(trigPinFront, echoPinFront);
-  // leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
-  frontSensor = new ToFSensor(11, 0x28);
-  leftSensor = new ToFSensor(12, 0x29);
+  frontSensor = new UltrasonicSensor(trigPinFront, echoPinFront);
+  leftSensor = new UltrasonicSensor(trigPinLeft, echoPinLeft);
+  // frontSensor = new ToFSensor(11, 0x28);
+  // leftSensor = new ToFSensor(12, 0x29);
 
   digitalWrite(ledPin, !running);
 }
@@ -70,18 +70,19 @@ void loop() {
     running = !running;
     digitalWrite(ledPin, !running);  // HIGH on standby
   }
+
   if (running) {
     int frontDistance = frontSensor->getDistance();
     int leftDistance = leftSensor->getDistance();
 
-    if (frontDistance < distanceThreshold && leftDistance < distanceThreshold) {
+    if (frontDistance < distanceThreshold / 2) {
       engine->right(motorSpeed);
-    } else if (leftDistance > distanceThreshold) {
-      engine->left(motorSpeed);
-    } else if (frontDistance < distanceThreshold / 2) {
+    } else if (leftDistance < distanceThreshold) {
+      engine->forward(motorSpeed);
+    } else if (frontDistance < distanceThreshold) {
       engine->right(motorSpeed);
     } else {
-      engine->forward(motorSpeed);
+      engine->left(motorSpeed);
     }
   } else {
     engine->stop();

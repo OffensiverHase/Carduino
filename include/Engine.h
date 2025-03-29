@@ -15,8 +15,8 @@ class Engine {
         void stop();
         void tick();
     private:
-        uint8_t DXL_ID_L = 1;
-        uint8_t DXL_ID_R = 2;
+        uint8_t DXL_ID_L = 2;
+        uint8_t DXL_ID_R = 1;
         float DXL_PROTOCOL_VERSION = 1.0;
         DynamixelShield dxl;
 };
