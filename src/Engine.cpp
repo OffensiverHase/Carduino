@@ -33,7 +33,7 @@ void Engine::left(int percent) {  // nach links beim fahren drehen
     this->dxl.setGoalVelocity(DXL_ID_R, percent, UNIT_PERCENT);
     // this->dxl.setGoalVelocity(DXL_ID_L, (percent / 2) - 100, UNIT_PERCENT);
     // this->dxl.setGoalVelocity(DXL_ID_L, percent / 4, UNIT_PERCENT);
-    this->dxl.setGoalVelocity(DXL_ID_L, 0);
+    this->dxl.setGoalVelocity(DXL_ID_L, percent / 4, UNIT_PERCENT);
 }
 
 void Engine::stop() {

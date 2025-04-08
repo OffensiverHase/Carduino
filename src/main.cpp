@@ -75,13 +75,13 @@ void loop() {
     int frontDistance = frontSensor->getDistance();
     int leftDistance = leftSensor->getDistance();
 
-    if (frontDistance < distanceThreshold / 2) {
+    if (frontDistance < distanceThreshold) {
       engine->right(motorSpeed);
-    } else if (leftDistance < distanceThreshold) {
+    } else if (leftDistance < distanceThreshold / 2) {
       engine->forward(motorSpeed);
-    } else if (frontDistance < distanceThreshold) {
+    } else if (leftDistance < distanceThreshold / 4) {
       engine->right(motorSpeed);
-    } else {
+    } {
       engine->left(motorSpeed);
     }
   } else {
